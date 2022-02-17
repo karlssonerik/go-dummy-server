@@ -1,0 +1,5 @@
+models/web/model_*
+openapi/model
+openapi/docs
+openapi/bundle.yaml
+swagger-ui-*.tar.gz
