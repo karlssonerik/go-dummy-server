@@ -21,7 +21,7 @@ type Endpoint struct {
 	Name      string
 	PathTpl   string
 	router    *mux.Router
-	responses map[RequestKey]string
+	responses map[RequestKey]interface{}
 	*mux.Route
 }
 
@@ -30,7 +30,7 @@ func NewEndpoint(name string, router *mux.Router) *Endpoint {
 		Name:      name,
 		Route:     router.NewRoute().Name(name),
 		router:    router,
-		responses: make(map[RequestKey]string),
+		responses: make(map[RequestKey]interface{}),
 	}
 }
 
@@ -51,7 +51,7 @@ func (e *Endpoint) Methods(methods ...string) *Endpoint {
 	return e
 }
 
-func (e *Endpoint) AddResponse(method, request, response string) *Endpoint {
+func (e *Endpoint) AddResponse(method, request string, response interface{}) *Endpoint {
 	requestKey := RequestKey{
 		Method:  method,
 		Request: request,

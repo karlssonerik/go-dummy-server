@@ -10,7 +10,6 @@ import (
 	"github.com/SKF/go-utility/v2/env"
 	http_server "github.com/SKF/go-utility/v2/http-server"
 	"github.com/SKF/go-utility/v2/log"
-	"github.com/gorilla/mux"
 	"go.opencensus.io/plugin/ochttp"
 
 	"go-dummy-server/cmd/rest-api/router"
@@ -24,9 +23,7 @@ var (
 
 func main() {
 
-	r := mux.NewRouter()
-
-	router.Router = r
+	r := router.Get()
 
 	webserver.NewEndpoint("AddEndpoint", r).
 		Path("/addEndpoint").
