@@ -7,21 +7,23 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/SKF/go-utility/v2/env"
-	http_server "github.com/SKF/go-utility/v2/http-server"
-	"github.com/SKF/go-utility/v2/log"
 	"go.opencensus.io/plugin/ochttp"
 
+	"go-dummy-server/cmd/rest-api/logger"
 	"go-dummy-server/cmd/rest-api/router"
 	"go-dummy-server/cmd/rest-api/webserver"
 )
 
 var (
-	portHealthEndpoint = env.GetAsString("PORT", "9090")
-	portWebAPI         = env.GetAsString("PORT", "8666")
+	portWebAPI = os.Getenv("PORT")
 )
 
 func main() {
+	if portWebAPI == "" {
+		portWebAPI = "8666"
+	}
+
+	log := logger.Log()
 
 	r := router.Get()
 
@@ -50,15 +52,15 @@ func main() {
 	}()
 
 	go func() {
-		log.WithField("port", portWebAPI).Info("Will start to listen and serve")
+		log.Infow("Will start to listen and serve",
+			"port", portWebAPI)
 
 		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
-			log.WithError(err).Error("HTTP server ListenAndServe")
+			log.Errorw("HTTP server ListenAndServe",
+				"error", err)
 			sigs <- syscall.SIGTERM
 		}
 	}()
-
-	go http_server.StartHealthServer(portHealthEndpoint)
 
 	<-serverClosed
 	log.Info("Exiting")

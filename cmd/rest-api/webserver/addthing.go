@@ -3,8 +3,9 @@ package webserver
 import (
 	"encoding/json"
 	"fmt"
-	"go-dummy-server/cmd/rest-api/router"
 	"net/http"
+
+	"go-dummy-server/cmd/rest-api/router"
 )
 
 type AddEndpointResponse struct {

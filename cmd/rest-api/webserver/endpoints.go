@@ -3,7 +3,6 @@ package webserver
 import (
 	"net/http"
 
-	"github.com/SKF/go-utility/v2/log"
 	"github.com/gorilla/mux"
 )
 

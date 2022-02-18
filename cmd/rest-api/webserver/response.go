@@ -6,22 +6,29 @@ import (
 	"fmt"
 	"net/http"
 
-	http_model "github.com/SKF/go-utility/v2/http-model"
-	http_server "github.com/SKF/go-utility/v2/http-server"
-	"github.com/SKF/go-utility/v2/log"
+	"go-dummy-server/cmd/rest-api/logger"
 )
+
+var log = logger.Log()
+
+var ErrResponseInternalServerError = []byte(`{"error": {"message": "internal server error"}}`)
 
 func marshalAndWriteJSONResponse(ctx context.Context, w http.ResponseWriter, r *http.Request, code int, body interface{}) {
 	bytes, err := json.Marshal(body)
 	if err != nil {
-		log.WithError(err).
-			WithTracing(ctx).
-			WithField("type", fmt.Sprintf("%T", body)).
-			Error("Failed to marshal response body")
+		log.Errorw("Failed to marshal response body",
+			"type", fmt.Sprintf("%T", body),
+			"error", err)
 
 		code = http.StatusInternalServerError
-		bytes = http_model.ErrResponseInternalServerError
+		bytes = ErrResponseInternalServerError
 	}
 
-	http_server.WriteJSONResponse(ctx, w, r, code, bytes)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	_, err = w.Write(bytes)
+	if err != nil {
+		log.Errorw("Failed to write response",
+			"error", err)
+	}
 }
